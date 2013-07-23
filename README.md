@@ -47,6 +47,28 @@ scripts. One is provided here as an example.
 Adding a file can be done either by providing a full path to it
 (/home/data/myfile.zip) or specifying a file name in the current directory.
 
+Files are served directly by the Go process, using the default HTTP server
+implementation from Go. Files are served on HTTP by default. To switch to
+HTTPS, indicate a certificate and key file name in the json configuration
+file. Example:
+
+    {
+        "TOKEN_DB": "token.db",
+        "LOG_FILE": "onetime.log",
+       "BASE_ADDR": "FQDN:PORT",
+             "CRT": "/etc/web/server.crt",
+             "KEY": "/etc/web/server.key"
+    }
+
+TOKEN_DB and LOG_FILE live in the same directory as the executable file. It
+is not currently possible to indicate full path names for these values.
+
+FQDN:PORT correspond to a Fully Qualified Domain Name and Port that are
+visible to the people you want to share files with.
+
+CRT and KEY are X.509 certificate and key files. Do not protect the key
+file with a password if you want the server to start without interaction.
+
 
 # More details
 
