@@ -321,8 +321,10 @@ func Serve() {
     TOKEN_DB: %s
     LOG_FILE: %s
    BASE_ADDR: %s
+         CRT: %s
+         KEY: %s
 
-`, cnf.path, cnf.TOKEN_DB, cnf.LOG_FILE, cnf.BASE_ADDR)
+`, cnf.path, cnf.TOKEN_DB, cnf.LOG_FILE, cnf.BASE_ADDR, cnf.CRT, cnf.KEY)
     logf, _ := os.OpenFile(cnf.LOG_FILE,
                            os.O_WRONLY|os.O_APPEND|os.O_CREATE,
                            0666)
@@ -357,18 +359,20 @@ func setConfiguration() {
     name,_ := os.Readlink("/proc/self/exe")
     cname  := path.Dir(name)+CNF_NAME
 
-
     fo, err := os.Create(cname)
     if err!=nil {
         fmt.Println("cannot create config file: ", cname)
         return
     }
     defer fo.Close()
-    fmt.Fprintln(fo,
+
+    fmt.Fprintf(fo,
                      `{
     "TOKEN_DB": "token.db",
     "LOG_FILE": "onetime.log",
-   "BASE_ADDR": "http://localhost:2500"
+   "BASE_ADDR": "http://localhost:2500",
+         "CRT": "server.crt",
+         "KEY": "server.key"
 }
 `)
     fmt.Println("Config file created: ", cname)
@@ -385,23 +389,36 @@ func readConfiguration() error {
     // Load config file
     js, err := ioutil.ReadFile(cnf.path)
     if err!=nil {
-        fmt.Println("error loading config file:", err)
         return err
     }
     json.Unmarshal(js, &cnf)
     // Check all required values are there
     if len(cnf.TOKEN_DB)>0 {
-        cnf.TOKEN_DB = cpath+"/"+cnf.TOKEN_DB
+        if cnf.TOKEN_DB[0]!='/' {
+            cnf.TOKEN_DB = cpath+"/"+cnf.TOKEN_DB
+        }
     } else {
         return errors.New("TOKEN_DB undefined in "+cnf.path)
     }
     if len(cnf.LOG_FILE)>0 {
-        cnf.LOG_FILE = cpath+"/"+cnf.LOG_FILE
+        if cnf.LOG_FILE[0]!='/' {
+            cnf.LOG_FILE = cpath+"/"+cnf.LOG_FILE
+        }
     } else {
         return errors.New("LOG_FILE undefined in "+cnf.path)
     }
     if len(cnf.BASE_ADDR)<1 {
         return errors.New("BASE_ADDR undefined in "+cnf.path)
+    }
+    if len(cnf.CRT)>0 {
+        if cnf.CRT[0]!='/' {
+            cnf.CRT = cpath+"/"+cnf.CRT
+        }
+    }
+    if len(cnf.KEY)>0 {
+        if cnf.KEY[0]!='/' {
+            cnf.KEY = cpath+"/"+cnf.KEY
+        }
     }
     return nil
 }
@@ -423,7 +440,7 @@ func main() {
     }
 
     err := readConfiguration()
-    if err!=nil {
+    if err!=nil && os.Args[1]!="config" {
         fmt.Println(err)
         return
     }

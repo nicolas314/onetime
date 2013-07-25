@@ -56,12 +56,17 @@ file. Example:
         "TOKEN_DB": "token.db",
         "LOG_FILE": "onetime.log",
        "BASE_ADDR": "FQDN:PORT",
-             "CRT": "/etc/web/server.crt",
-             "KEY": "/etc/web/server.key"
+             "CRT": "server.crt",
+             "KEY": "server.key"
     }
 
-TOKEN_DB and LOG_FILE live in the same directory as the executable file. It
-is not currently possible to indicate full path names for these values.
+The json configuration file is called onetime.json and must live in the
+same directory as the executable file.
+
+Other configuration file names provided without path (e.g. token.db) are
+expected in the same directory as the executable file. If you want to put
+them somewhere else, indicate a full path to access them, e.g.
+/var/onetime/token.db.
 
 FQDN:PORT correspond to a Fully Qualified Domain Name and Port that are
 visible to the people you want to share files with.
