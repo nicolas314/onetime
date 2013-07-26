@@ -58,7 +58,7 @@ file. Example:
     {
         "TOKEN_DB": "token.db",
         "LOG_FILE": "onetime.log",
-       "BASE_ADDR": "FQDN:PORT",
+       "BASE_ADDR": "http|https://FQDN:PORT",
              "CRT": "server.crt",
              "KEY": "server.key"
     }
@@ -71,8 +71,14 @@ expected in the same directory as the executable file. If you want to put
 them somewhere else, indicate a full path to access them, e.g.
 /var/onetime/token.db.
 
-FQDN:PORT correspond to a Fully Qualified Domain Name and Port that are
-visible to the people you want to share files with.
+BASE_ADDR is actually a URL. It should point to an address that is visible
+from your intended audience. Examples:
+
+ - http://myhost.example.com:1234
+ - https://myhost.example.com:2500
+
+Careful about indicating http or https in the URL. If you want to serve
+over HTTPS you need to have a certificate and key for the server.
 
 CRT and KEY are X.509 certificate and key files. Do not protect the key
 file with a password if you want the server to start without interaction.
