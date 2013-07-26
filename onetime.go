@@ -7,10 +7,12 @@
 package main
 
 import (
+    "crypto/rand"
     "encoding/base64"
     "encoding/json"
     "errors"
     "fmt"
+    "io"
     "io/ioutil"
     "log"
     "net/http"
@@ -86,10 +88,11 @@ func GenerateOnetime(sz int) string {
 
     // Get sz random bytes
     pick := make([]byte, sz)
-    f,_:=os.Open("/dev/urandom")
-    _,_ = f.Read(pick)
-    f.Close()
-
+    n, err := io.ReadFull(rand.Reader, pick)
+    if n!=sz || err!=nil {
+        // Cannot do much in case of random generator failure. Bailout
+        panic(err)
+    }
     // Pick sz characters at random
     ott:=""
     for i:=0 ; i<sz ; i++ {

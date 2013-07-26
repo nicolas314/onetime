@@ -77,15 +77,9 @@ file with a password if you want the server to start without interaction.
 
 # More details
 
-There are few Linuxisms in the code: Paths are all slash-separated, the
-random source used to generate one-time tokens is /dev/urandom, and the
-configuration file is found by searching for *onetime.json* in the same
-directory as the executable (found by parsing /proc/self/exe).
-
-The default configuration is to store the executable, configuration file,
-token database and log file in /opt/onetime. That can be changed by simply
-installing the executable in another place but make sure the other files
-are read/writable by the file owner.
+There are few Linuxisms in the code: paths are all slash-separated,
+and the configuration file is found by searching for *onetime.json* in the
+same directory as the executable, found by parsing /proc/self/exe.
 
 # Wish list
 
