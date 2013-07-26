@@ -28,6 +28,9 @@ Anyway, I am still learning Go and love the language. Implementing this in
 Go was a breeze, is contained in a single file, and solves both the
 command-line part and the HTTP(s) server.
 
+You can read a bit more from this blog post:
+http://nicolas314.wordpress.com/2013/07/24/one-time-file-sharing
+
 Fork at will! Pull requests welcome!
 
 # How to use it?
