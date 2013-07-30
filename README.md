@@ -33,22 +33,44 @@ http://nicolas314.wordpress.com/2013/07/24/one-time-file-sharing
 
 Fork at will! Pull requests welcome!
 
-# How to use it?
+# How to build
+
+    go build onetime.go
+
+
+# How to use
 
 *onetime* is purely command-line driven. Launch it without arguments to get
 some help. Commands are:
 
-    config          configure server
-    server          start the server in background
-    add FILENAME    create a new one-time token for FILENAME
-    ls              list existing entries
-    del TOKEN       delete a one-time token
+    onetime config          Configure server
+    onetime serve           Serve onetime requests
+    onetime add path        Create onetime request for path
+    onetime ls              List existing requests
+    onetime del token       Delete onetime request
+
+
+- config will create a default configuration file called onetime.json in
+  the same directory as the onetime executable. Edit this file before
+  launching anything else
+
+- server starts the program in server mode. The server remains in the
+  foreground while running. You can transform that into a background daemon
+  on Debian e.g. by using start-stop-daemon.
+
+- add registers a file for service. It prints out on stdout a short
+  message meant to be copied/pasted into an email. The file name can be
+  provided with full path. Without path indication, onetime will search the
+  current working directory for a matching file name.
+
+- ls lists all onetime tokens currently registered
+
+- del token removes a token from the DB. A token in that case is the 8-char
+  random string generated for each file.
+
 
 The server part can be started/stopped on Debian using standard init.d
 scripts. One is provided here as an example.
-
-Adding a file can be done either by providing a full path to it
-(/home/data/myfile.zip) or specifying a file name in the current directory.
 
 Files are served directly by the Go process, using the default HTTP server
 implementation from Go. Files are served on HTTP by default. To switch to
@@ -62,6 +84,8 @@ file. Example:
              "CRT": "server.crt",
              "KEY": "server.key"
     }
+
+CRT and KEY are not necessary for HTTP service, only HTTPS.
 
 The json configuration file is called onetime.json and must live in the
 same directory as the executable file.
