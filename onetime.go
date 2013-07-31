@@ -203,7 +203,7 @@ AAD//wAA//8AAA==`
 
     enc := base64.StdEncoding
     fav,_ := enc.DecodeString(fav64)
-    log.Println(req.RemoteAddr, req.URL, "favicon")
+    // log.Println(req.RemoteAddr, req.URL, "favicon")
     w.Write(fav)
 }
 
@@ -211,19 +211,19 @@ AAD//wAA//8AAA==`
 // Send a web page showing download links
 func Show(w http.ResponseWriter, req * http.Request) {
     reqpath:=req.URL.Path[1:]
-    // log.Println(req.RemoteAddr, req.URL)
+    // log.Println("GET", req.RemoteAddr, req.URL)
     ltok := make(LTokens)
     ltok.Load(cnf.TOKEN_DB)
     tok, err := ltok[reqpath]
     if err==false {
-        log.Println(req.RemoteAddr, req.URL, "404")
+        log.Println("404", req.RemoteAddr, req.URL)
         http.NotFound(w, req)
         return
     }
     name := path.Base(tok.Path)
     sta, s_err := os.Stat(tok.Path)
     if s_err!=nil {
-        log.Println(req.RemoteAddr, req.URL, "missing file")
+        log.Println("NOFILE", req.RemoteAddr, req.URL)
         http.NotFound(w, req)
         return
     }
@@ -233,7 +233,7 @@ func Show(w http.ResponseWriter, req * http.Request) {
                          isotime(tok.Activated.Add(TOKEN_VAL))+
                         "</dd>"
     }
-    log.Println(req.RemoteAddr, req.URL, "showing")
+    log.Println("DISP", req.RemoteAddr, req.URL)
     fmt.Fprintf(w, `<!DOCTYPE html>
 <html>
 <head>
@@ -295,13 +295,13 @@ func Distribute(w http.ResponseWriter, req * http.Request) {
     ltok.Load(cnf.TOKEN_DB)
     tok, err := ltok[reqpath]
     if err==false {
-        log.Println(req.RemoteAddr, req.URL, "404")
+        log.Println("404", req.RemoteAddr, req.URL)
         http.NotFound(w, req)
         return
     }
     if tok.Activated.Year()>1970 {
         if time.Now().Sub(tok.Activated) > TOKEN_VAL {
-            log.Println(req.RemoteAddr, req.URL, "outdated")
+            log.Println("EXPIRED", req.RemoteAddr, req.URL)
             http.NotFound(w, req)
             return
         }
@@ -309,11 +309,11 @@ func Distribute(w http.ResponseWriter, req * http.Request) {
     ltok[reqpath] = Token{tok.Path, tok.Created, time.Now()}
     ltok.Save(cnf.TOKEN_DB)
     name := path.Base(tok.Path)
-    log.Println(req.RemoteAddr, req.URL, "sending")
+    log.Println("SEND", req.RemoteAddr, req.URL)
     w.Header().Set("Content-disposition",
                    fmt.Sprintf("attachment; filename=\"%s\"", name))
     http.ServeFile(w, req, tok.Path)
-    log.Println(req.RemoteAddr, reqpath, "done")
+    log.Println("DONE", req.RemoteAddr, reqpath)
 }
 
 // Server configure and start
@@ -337,6 +337,7 @@ func Serve() {
     http.HandleFunc("/d/", Distribute)
     http.HandleFunc("/", Show)
 
+    log.Println("START", cnf.BASE_ADDR)
     // Choose http or https depending on BASE_ADDR
     var err error
     if strings.HasPrefix(cnf.BASE_ADDR, "https") {
@@ -352,8 +353,7 @@ func Serve() {
 
     if err!=nil {
         log.Fatal(err)
-    } else {
-        log.Println("Listening on", cnf.BASE_ADDR)
+        return
     }
 }
 
