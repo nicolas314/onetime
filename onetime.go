@@ -154,6 +154,7 @@ URL: %s/%s
 
 // Delete a Token from a list
 func (ltok LTokens) Del(ott string) {
+    fmt.Printf("removing token: %s\n", ott)
     delete(ltok, ott)
 }
 
@@ -465,7 +466,9 @@ func main() {
         case "del", "delete", "rm":
         if len(os.Args)>=2 {
             ltok.Load(cnf.TOKEN_DB)
-            ltok.Del(os.Args[2])
+            for i:=2 ; i<len(os.Args) ; i++ {
+                ltok.Del(os.Args[i])
+            }
             ltok.Save(cnf.TOKEN_DB)
         }
     }
