@@ -175,6 +175,17 @@ activated: %s
     }
 }
 
+// Purge expired tokens
+func (ltok LTokens) Purge() {
+    now := time.Now()
+    for k, v := range ltok {
+        if isotime(v.Activated)!="no" && now.Sub(v.Activated) > TOKEN_VAL {
+            ltok.Del(k)
+        }
+    }
+}
+
+
 // Return a hardcoded favicon
 // Seems stupid to hardcode this but avoids having to locate
 // the damn file and a file read for each request
@@ -438,6 +449,7 @@ func main() {
     onetime add path        Create onetime request for path
     onetime ls              List existing requests
     onetime del token       Delete onetime request
+    onetime purge           Delete all expired tokens
 
 `)
         return
@@ -471,6 +483,10 @@ func main() {
             }
             ltok.Save(cnf.TOKEN_DB)
         }
+        case "purge":
+        ltok.Load(cnf.TOKEN_DB)
+        ltok.Purge()
+        ltok.Save(cnf.TOKEN_DB)
     }
     return
 }
