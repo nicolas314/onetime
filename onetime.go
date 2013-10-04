@@ -130,7 +130,7 @@ func (ltok LTokens) Add(filename string) {
     // Check file exists and is readable
     sta, err := os.Stat(ffilename)
     if err != nil {
-        fmt.Println("cannot find file: %s", ffilename)
+        fmt.Println("cannot find file: ", ffilename)
         return
     }
     if sta.IsDir() {
