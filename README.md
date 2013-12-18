@@ -48,6 +48,7 @@ some help. Commands are:
     onetime add path        Create onetime request for path
     onetime ls              List existing requests
     onetime del token       Delete onetime request
+    onetime purge           Delete all expired tokens
 
 
 - config will create a default configuration file called onetime.json in
@@ -68,9 +69,12 @@ some help. Commands are:
 - del token removes a token from the DB. A token in that case is the 8-char
   random string generated for each file.
 
+- purge removes all tokens that have expired, i.e. have been clicked
+  more than 4 hours ago.
+
 
 The server part can be started/stopped on Debian using standard init.d
-scripts. One is provided here as an example.
+scripts. One is provided here as an example: see onetimed.
 
 Files are served directly by the Go process, using the default HTTP server
 implementation from Go. Files are served on HTTP by default. To switch to
