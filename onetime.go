@@ -8,6 +8,7 @@ package main
 
 import (
     "crypto/rand"
+    "crypto/tls"
     "encoding/base64"
     "encoding/json"
     "errors"
@@ -130,7 +131,7 @@ func (ltok LTokens) Add(filename string) {
     // Check file exists and is readable
     sta, err := os.Stat(ffilename)
     if err != nil {
-        fmt.Println("cannot find file: ", ffilename)
+        fmt.Println("cannot find file: %s", ffilename)
         return
     }
     if sta.IsDir() {
@@ -353,10 +354,16 @@ func Serve() {
     // Choose http or https depending on BASE_ADDR
     var err error
     if strings.HasPrefix(cnf.BASE_ADDR, "https") {
-        err = http.ListenAndServeTLS(cnf.BASE_ADDR[8:],
-                                     cnf.CRT,
-                                     cnf.KEY,
-                                     nil)
+        // Force cipher suite to the least CPU-intensive
+        // Other suites are just unbearably slow on my 32-bit server
+        t := tls.Config {
+                CipherSuites: []uint16{tls.TLS_RSA_WITH_RC4_128_SHA},
+            }
+        s := &http.Server {
+                Addr: cnf.BASE_ADDR[8:],
+                TLSConfig: &t,
+            }
+        err = s.ListenAndServeTLS(cnf.CRT, cnf.KEY)
     } else if strings.HasPrefix(cnf.BASE_ADDR, "http") {
         err = http.ListenAndServe(cnf.BASE_ADDR[7:], nil)
     } else {
