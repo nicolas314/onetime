@@ -29,7 +29,7 @@ Go was a breeze, is contained in a single file, and solves both the
 command-line part and the HTTP(s) server.
 
 You can read a bit more from this blog post:
-http://nicolas314.wordpress.com/2013/07/24/one-time-file-sharing
+https://maz.one/one-time-file-sharing.html
 
 Fork at will! Pull requests welcome!
 
